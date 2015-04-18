@@ -95,7 +95,7 @@ public class MainPlayerController : MonoBehaviour {
 		
 		if (Dashing){
 			//Dash
-			if(Input.GetKeyUp("l") || Input.GetKeyUp(KeyCode.LeftShift) || !Engine.CanControl){
+			if(Input.GetKeyUp(KeyCode.LeftShift) || !Engine.CanControl){
 				CancelDash();
 			}
 			if(Input.GetButtonDown("Jump") && (controller.collisionFlags & CollisionFlags.Below) != 0){
@@ -142,7 +142,7 @@ public class MainPlayerController : MonoBehaviour {
 		}
 
 		//Activate Sprint
-		if(Input.GetKeyDown("l") && !Dashing && GroundDash || Input.GetKeyDown(KeyCode.LeftShift)  && !Dashing && GroundDash){
+		if(Input.GetKeyDown(KeyCode.LeftShift)  && !Dashing && GroundDash){
 			//Dash
 			if((controller.collisionFlags & CollisionFlags.Below) != 0){
 				//StartCoroutine(Dash());
