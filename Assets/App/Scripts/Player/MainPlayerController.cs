@@ -230,7 +230,7 @@ public class MainPlayerController : MonoBehaviour {
 	//void OnCollisionStay(Collision col) {
 	void OnControllerColliderHit(ControllerColliderHit col) {
 		CharacterController controller = GetComponent<CharacterController>();
-		Debug.Log("TAG: "+col.gameObject.tag);
+		//Debug.Log("TAG: "+col.gameObject.tag);
 		if(JumpingDown){
 			JumpingDown = false;
 		}
