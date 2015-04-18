@@ -73,13 +73,13 @@ public class CharacterStatus : MonoBehaviour {
 	public GameObject StunEffect;
 	
 
-	// 0 = Normal , 1 = Fire , 2 = Ice , 3 = Earth , 4 = Wind
+	// 0 = Normal , 1 = Fire , 2 = Ice , 3 = Earth , 4 = Lightning
 	public NaturalElement[] ElementEffective = new NaturalElement[5]{
 		new NaturalElement(){ Name = "Normal"},
 		new NaturalElement(){ Name = "Fire"},
 		new NaturalElement(){ Name = "Ice"},
 		new NaturalElement(){ Name = "Earth"},
-		new NaturalElement(){ Name = "Wind"}
+		new NaturalElement(){ Name = "Lightning"}
 	};
 
 	public Resistence StatusResist;

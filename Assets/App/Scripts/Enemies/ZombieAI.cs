@@ -22,6 +22,7 @@ public class ZombieAI : MonoBehaviour {
 	
 	public bool  Freeze = false;
 	
+	public float AttackDistance = 2.0f;
 	public Transform AttackPrefab;
 	public Transform AttackPoint;
 
@@ -94,12 +95,11 @@ public class ZombieAI : MonoBehaviour {
 			return;
 		}
 		if (FollowState == ZombieAIState.Moving) {
-			if ((FollowTarget.position - transform.position).magnitude <= ApproachDistance) {
+			float distance = (FollowTarget.position - transform.position).magnitude;
+			if (distance <= ApproachDistance) {
 				FollowState = ZombieAIState.Pausing;
 				//TODO CALL IDLE ANIMATION
-				//
-				StartCoroutine(Attack());
-			}else if ((FollowTarget.position - transform.position).magnitude >= LostSight)
+			}else if (distance >= LostSight)
 			{
 				status.Health = status.MaxHealth;
 				FollowState = ZombieAIState.Idle;
@@ -111,6 +111,9 @@ public class ZombieAI : MonoBehaviour {
 				Vector3 destiny = FollowTarget.position;
 				destiny.y = transform.position.y;
 				transform.LookAt(destiny);
+			}
+			if (distance <= AttackDistance) {
+				StartCoroutine(Attack());
 			}
 		}
 		else if (FollowState == ZombieAIState.Pausing){
@@ -142,10 +145,9 @@ public class ZombieAI : MonoBehaviour {
 		
 	IEnumerator  Attack (){
 		CancelAttack = false;
-		Transform bulletShootout;
+		Transform attackShootout;
 		var status = GetComponent<CharacterStatus>();
-		if(!status.IsFear || !status.Freeze || !Freeze || !Attacking){
-			Freeze = true;
+		if(!status.IsFear && !status.Freeze && !Freeze && !Attacking){
 			Attacking = true;
 			//TODO ANIMATION ATACK
 			if(AttackVoice){
@@ -155,16 +157,18 @@ public class ZombieAI : MonoBehaviour {
 			yield return new WaitForSeconds(AttackCast);		
 			if(!CancelAttack){
 				if(AttackPrefab){
-					bulletShootout = Instantiate(AttackPrefab, AttackPoint.transform.position , AttackPoint.transform.rotation) as Transform;
+					attackShootout = Instantiate(AttackPrefab, AttackPoint.transform.position , AttackPoint.transform.rotation) as Transform;
+					attackShootout.GetComponent<AttackStatus>().Setting(
+						RangeAtk ,
+						MeleeAtk ,
+						"Enemy" ,
+						gameObject);
 				}
-				//bulletShootout.GetComponent<AttackStatus>().Setting(RangeAtk , MeleeAtk , "Enemy" , this.gameObject);
 				yield return new WaitForSeconds(AttackDelay);
-				Freeze = false;
 				Attacking = false;
 				//TODO CALL WALK ANIM
 				CheckDistance();
 			}else{
-				Freeze = false;
 				Attacking = false;
 			}
 
@@ -178,14 +182,14 @@ public class ZombieAI : MonoBehaviour {
 			FollowState = ZombieAIState.Idle;
 			return;
 		}
-		float Distancea = (FollowTarget.position - transform.position).magnitude;
-		if (Distancea <= ApproachDistance){
+		float distancea = (FollowTarget.position - transform.position).magnitude;
+		if (distancea <= AttackDistance){
 			Vector3 destinya = FollowTarget.position;
 			destinya.y = transform.position.y;
 			transform.LookAt(destinya);
 			StartCoroutine(Attack());
-			//Attack();
-		}else{
+		}
+		if (distancea > ApproachDistance){
 			FollowState = ZombieAIState.Moving;
 			//TODO CALL WALK ANIM
 		}
@@ -224,8 +228,13 @@ public class ZombieAI : MonoBehaviour {
 			yield return new WaitForSeconds(castTime);
 
 			if(!CancelAttack){
-				Transform bulletShootout = Instantiate(skill, AttackPoint.transform.position , AttackPoint.transform.rotation) as Transform;
-				//bulletShootout.GetComponent<AttackStatus>().Setting(RangeAtk , MeleeAtk , "Enemy" , this.gameObject);
+				Transform attackShootout = Instantiate(skill, AttackPoint.transform.position , AttackPoint.transform.rotation) as Transform;
+				attackShootout.GetComponent<AttackStatus>().Setting(
+					RangeAtk,
+					MeleeAtk,
+					"Enemy",
+					gameObject
+				);
 				yield return new WaitForSeconds(delay);
 				Freeze = false;
 				CastSkill = false;
